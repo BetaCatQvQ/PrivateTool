@@ -27,7 +27,7 @@ public class AutoCreateEntityTool extends JDBCBase {
 	private final String DBNAME = "invoicing_system";
 
 	@Test
-	public void test() {
+	public void Create() {
 		// 创建连接
 		String sql = "SELECT `table_name`, `column_name`, `data_type` FROM information_schema.columns WHERE table_schema = ?";
 		Connection conn = super.getConnection();
@@ -87,7 +87,7 @@ public class AutoCreateEntityTool extends JDBCBase {
 			if (entities.get(tableName) == null) {
 				DBEntity entity = new DBEntity();
 				// 去除表名下划线，然后每个单词开头大写
-				String[] nameBlock = tableName.split("_");
+				String[] nameBlock = tableName.toLowerCase().split("_");
 				for (int i = 0; i < nameBlock.length; i++) {
 					char[] nameChars = nameBlock[i].toCharArray();
 					nameChars[0] -= 32;
@@ -102,7 +102,19 @@ public class AutoCreateEntityTool extends JDBCBase {
 			// 创建记录，然后放入实体
 			DBRecord record = new DBRecord();
 			record.setTableName(tableName);
-			record.setColumnName(rs.getString("column_name"));
+			// 去除列名下划线
+			String[] propertyBlocks = rs.getString("column_name").split("_");
+			propertyBlocks[0] = propertyBlocks[0].toLowerCase();
+			if (propertyBlocks.length > 1) {
+				for (int i = 1; i < propertyBlocks.length; i++) {
+					propertyBlocks[i] = propertyBlocks[i].toLowerCase();
+					char[] propertyChars = propertyBlocks[i].toCharArray();
+					propertyChars[0] -= 32;
+					propertyBlocks[i] = new String(propertyChars);
+				}
+			}
+			String propertyName = String.join("", propertyBlocks);
+			record.setColumnName(propertyName);
 			record.setDataType(rs.getString("data_type"));
 			Class<?> propertyClass = TypeHandler.getClassByHandler(rs.getString("data_type"));
 			record.setPropertyClass(propertyClass);
@@ -168,7 +180,7 @@ public class AutoCreateEntityTool extends JDBCBase {
 		String packageName = "com.entity";
 		packageName = packageName.replace(".", "/");
 		File file = new File("src/" + packageName + "/" + className + ".java");
-		if(!file.getParentFile().exists()) {
+		if (!file.getParentFile().exists()) {
 			file.getParentFile().mkdirs();
 		}
 		System.out.println(file.getAbsolutePath());
