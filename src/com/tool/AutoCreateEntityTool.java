@@ -93,7 +93,7 @@ public class AutoCreateEntityTool extends JDBCBase {
                 // 连接表名
                 String className = String.join("", nameBlock);
                 entity.setClassName(className);
-                entity.setColums(new ArrayList<DBRecord>());
+                entity.setColumns(new ArrayList<DBRecord>());
                 entities.put(tableName, entity);
             }
             // 创建记录，然后放入实体
@@ -115,7 +115,7 @@ public class AutoCreateEntityTool extends JDBCBase {
             record.setDataType(rs.getString("data_type"));
             Class<?> propertyClass = TypeHandler.getClassByHandler(rs.getString("data_type"));
             record.setPropertyClass(propertyClass);
-            entities.get(tableName).getColums().add(record);
+            entities.get(tableName).getColumns().add(record);
         }
         return new ArrayList<DBEntity>(entities.values());
     }
@@ -126,7 +126,7 @@ public class AutoCreateEntityTool extends JDBCBase {
         List<String> properties = new ArrayList<>();
         List<String> interfaces = new ArrayList<>();
 
-        for (DBRecord record : entity.getColums()) {
+        for (DBRecord record : entity.getColumns()) {
             Class<?> propertyClass = record.getPropertyClass();
             // 生成import内容
             if (!"java.lang".equals(propertyClass.getPackageName())) {

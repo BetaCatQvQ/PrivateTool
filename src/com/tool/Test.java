@@ -6,5 +6,4 @@ public class Test {
 		AutoCreateEntityTool tool = new AutoCreateEntityTool();
 		tool.Create();
 	}
-
 }
